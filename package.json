@@ -1,0 +1,23 @@
+{
+  "name": "my-vue-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "sass": "^1.79.5",
+    "uuid": "^10.0.0",
+    "vue": "^3.5.10",
+    "vuex": "^4.0.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.1.4",
+    "typescript": "^5.5.3",
+    "vite": "^5.4.8",
+    "vue-tsc": "^2.1.6"
+  }
+}
