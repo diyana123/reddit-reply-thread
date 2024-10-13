@@ -2,8 +2,8 @@ import { createStore } from "vuex";
 import { v4 as uuid } from 'uuid'; // Import uuid
 
 interface Comment {
-  id: string; // Change id type to string
-  content: string | { id: number; content: string }; // Adjust content type as needed
+  id: string; // Ensure id type is string
+  content: string; // Adjust content type to string
   upvotes: number;
   downvotes: number;
   replies: Comment[];
@@ -23,26 +23,26 @@ export default createStore<State>({
     ADD_COMMENT(state: State, comment: Comment) {
       state.comments.push(comment);
     },
-    ADD_REPLY(state: State, { id, reply }: { id: string; reply: Comment }) { // Change id type to string
+    ADD_REPLY(state: State, { id, reply }: { id: string; reply: Comment }) {
+      // Ensure the update function returns an empty object
       state.comments = findAndUpdateById(state.comments, id, (comment) => {
         comment.replies.push(reply);
+        return {}; // Ensure the function returns an empty object for mutations
       });
     },
-    UPVOTE_COMMENT(state: State, id: string) { // Change id type to string
+    UPVOTE_COMMENT(state: State, id: string) {
       console.log("Before update:", JSON.stringify(state.comments, null, 2));
       state.comments = findAndUpdateById(state.comments, id, (comment) => ({
         upvotes: comment.upvotes + 1,
       }));
       console.log("After update:", JSON.stringify(state.comments, null, 2));
     },
-
-    DOWNVOTE_COMMENT(state: State, id: string) { // Change id type to string
+    DOWNVOTE_COMMENT(state: State, id: string) {
       state.comments = findAndUpdateById(state.comments, id, (comment) => ({
         downvotes: comment.downvotes + 1, // Increment the downvotes
       }));
     },
   },
-
   actions: {
     addComment({ commit }: { commit: Function }, content: string) {
       const newComment: Comment = {
@@ -54,13 +54,13 @@ export default createStore<State>({
       };
       commit("ADD_COMMENT", newComment);
     },
-    addReply({ commit }: { commit: Function }, { id, reply }: { id: string; reply: Comment }) { // Change id type to string
+    addReply({ commit }: { commit: Function }, { id, reply }: { id: string; reply: Comment }) {
       commit("ADD_REPLY", { id, reply });
     },
-    upvoteComment({ commit }: { commit: Function }, id: string) { // Change id type to string
+    upvoteComment({ commit }: { commit: Function }, id: string) {
       commit("UPVOTE_COMMENT", id);
     },
-    downvoteComment({ commit }: { commit: Function }, id: string) { // Change id type to string
+    downvoteComment({ commit }: { commit: Function }, id: string) {
       commit("DOWNVOTE_COMMENT", id);
     },
   },
@@ -80,29 +80,6 @@ function findAndUpdateById(
       return {
         ...comment,
         ...updateFn(comment),
-      };
-    }
-
-    // Check if the content object inside the comment has the matching id
-    if (
-      comment.content &&
-      typeof comment.content === "object" &&
-      comment.content !== null && // Ensure content is not null
-      comment.content.id === id
-    ) {
-      const updatedContent = updateFn({
-        id: comment.content.id,
-        content: comment.content.content,
-        upvotes: comment.upvotes,
-        downvotes: comment.downvotes,
-        replies: comment.replies,
-      });
-      return {
-        ...comment,
-        content: {
-          ...comment.content,
-          ...updatedContent,
-        },
       };
     }
 
