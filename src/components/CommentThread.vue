@@ -11,10 +11,19 @@
         <button type="submit" class="submit-btn">Post Comment</button>
       </form>
   
+      <!-- Sorting Options -->
+      <div class="sorting-options">
+        <label for="sortBy">Sort By:</label>
+        <select v-model="sortBy" id="sortBy">
+          <option value="mostUpvoted">Most Upvoted</option>
+         
+        </select>
+      </div>
+  
       <!-- Comment List -->
       <ul class="comment-list">
         <Comment
-          v-for="comment in comments"
+          v-for="comment in sortedComments"
           :key="comment.id"
           :comment="comment"
           @replyToComment="replyToComment"
@@ -26,13 +35,13 @@
   </template>
   
   <script lang="ts" setup>
-  import { computed, ref } from 'vue';
+  import { ref, computed } from 'vue';
   import { useStore } from 'vuex';
   import Comment from './Comment.vue';
-  import { v4 as uuid } from 'uuid'; // Import uuid
   
   const store = useStore();
   const newComment = ref<string>('');
+  const sortBy = ref<string>('mostUpvoted'); // State to track the sorting option
   
   // Add a new comment
   const addComment = (): void => {
@@ -45,7 +54,7 @@
   // Handle replying to comments, including nested replies
   const replyToComment = (id: number, replyContent: string): void => {
     const reply = {
-      id: uuid(), // Use uuid for reply ID
+      id: new Date().getTime(), // Generate a unique ID (using timestamp)
       content: replyContent,
       upvotes: 0,
       downvotes: 0,
@@ -57,15 +66,15 @@
   // Handle upvoting a comment
   const upvoteComment = (id: number): void => {
     store.dispatch('upvoteComment', id);
-    console.log(id, 'upvoted');
   };
   
+  // Handle downvoting a comment
   const downvoteComment = (id: number): void => {
     store.dispatch('downvoteComment', id);
   };
   
-  // Fetch the list of comments from Vuex store
-  const comments = computed(() => store.getters.comments);
+  // Fetch sorted comments from Vuex store based on sorting option
+  const sortedComments = computed(() => store.getters.sortedComments(sortBy.value));
   </script>
   
   <style lang="scss" scoped>
@@ -96,6 +105,18 @@
       &:hover {
         background-color: #0056b3;
       }
+    }
+  }
+  
+  .sorting-options {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+  
+    select {
+      margin-left: 10px;
+      padding: 5px;
+      border-radius: 4px;
     }
   }
   
