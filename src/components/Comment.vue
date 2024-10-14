@@ -7,7 +7,7 @@
       <div class="comment-body">
         <div class="comment-header">
           <span class="author">Username</span>
-          <small class="timestamp">2 hours ago</small>
+        
         </div>
 
         <div class="comment-content">
@@ -102,16 +102,19 @@
 <script lang="ts" setup>
 import { ref, computed } from "vue";
 import Comment from "./Comment.vue";
+import { Comment as CommentType } from '../types/types';
 
-interface Comment {
-  id: number;
-  content: string;
-  upvotes: number;
-  downvotes: number;
-  replies: Comment[];
-}
 
-const props = defineProps<{ comment: Comment }>();
+// interface Comment {
+//   id: number;
+//   content: string;
+//   upvotes: number;
+//   downvotes: number;
+//   replies: Comment[];
+ 
+// }
+
+const props = defineProps<{ comment: CommentType }>();
 const emit = defineEmits(["replyToComment", "upvote", "downvote"]);
 
 const showReplyForm = ref(false);
@@ -146,6 +149,8 @@ const toggleReplies = () => {
 const onReplyToComment = (parentId: number, replyContent: string): void => {
   emit("replyToComment", parentId, replyContent);
 };
+
+
 </script>
 
 <style lang="scss" scoped>

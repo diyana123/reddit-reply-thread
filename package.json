@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "date-fns": "^4.1.0",
     "localforage": "^1.10.0",
     "sass": "^1.79.5",
     "uuid": "^10.0.0",

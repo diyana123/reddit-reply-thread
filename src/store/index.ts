@@ -1,14 +1,7 @@
 import { createStore } from "vuex";
 import { v4 as uuid } from 'uuid';
 import localforage from "localforage";
-
-interface Comment {
-  id: string; // Unique identifier
-  content: string; // Comment text
-  upvotes: number; // Upvote count
-  downvotes: number; // Downvote count
-  replies: Comment[]; // Nested replies
-}
+import { Comment } from '../types/types';
 
 export interface State {
   comments: Comment[];
@@ -22,30 +15,30 @@ export default createStore<State>({
   mutations: {
     ADD_COMMENT(state: State, comment: Comment) {
       state.comments.push(comment);
-      // Save after adding the comment
-      this.commit('SAVE_COMMENTS_TO_LOCAL'); // Corrected mutation name
+      // Remove this line
+      // this.commit('SAVE_COMMENTS_TO_LOCAL');
     },
     ADD_REPLY(state: State, { id, reply }: { id: string; reply: Comment }) {
       state.comments = findAndUpdateById(state.comments, id, (comment) => {
         comment.replies.push(reply);
         return {}; // Ensure the function returns an empty object for mutations
       });
-      // Save after adding the reply
-      this.commit('SAVE_COMMENTS_TO_LOCAL'); // Corrected mutation name
+      // Remove this line
+      // this.commit('SAVE_COMMENTS_TO_LOCAL');
     },
     UPVOTE_COMMENT(state: State, id: string) {
       state.comments = findAndUpdateById(state.comments, id, (comment) => ({
         upvotes: comment.upvotes + 1,
       }));
-      // Save after upvote
-      this.commit('SAVE_COMMENTS_TO_LOCAL'); // Corrected mutation name
+      // Remove this line
+      // this.commit('SAVE_COMMENTS_TO_LOCAL');
     },
     DOWNVOTE_COMMENT(state: State, id: string) {
       state.comments = findAndUpdateById(state.comments, id, (comment) => ({
         downvotes: comment.downvotes + 1,
       }));
-      // Save after downvote
-      this.commit('SAVE_COMMENTS_TO_LOCAL'); // Corrected mutation name
+      // Remove this line
+      // this.commit('SAVE_COMMENTS_TO_LOCAL');
     },
     SET_COMMENTS(state: State, comments: Comment[]) {
       state.comments = comments;
@@ -82,31 +75,33 @@ export default createStore<State>({
         replies: [],
       };
       commit("ADD_COMMENT", newComment);
+      commit('SAVE_COMMENTS_TO_LOCAL'); // Save to local storage after adding
     },
     addReply({ commit }: { commit: Function }, { id, reply }: { id: string; reply: Comment }) {
       commit("ADD_REPLY", { id, reply });
+      commit('SAVE_COMMENTS_TO_LOCAL'); // Save to local storage after adding reply
     },
     upvoteComment({ commit }: { commit: Function }, id: string) {
       commit("UPVOTE_COMMENT", id);
+      commit('SAVE_COMMENTS_TO_LOCAL'); // Save to local storage after upvote
     },
     downvoteComment({ commit }: { commit: Function }, id: string) {
       commit("DOWNVOTE_COMMENT", id);
+      commit('SAVE_COMMENTS_TO_LOCAL'); // Save to local storage after downvote
     },
   },
   getters: {
     comments: (state: State) => state.comments,
+    sortedComments: (state: State) => (sortBy: string) => {
+      let sortedComments = [...state.comments];
+      
+      if (sortBy === 'mostUpvoted') {
+        // Sort by most upvoted first
+        sortedComments.sort((a, b) => b.upvotes - a.upvotes);
+      } 
 
-    // New getter to return sorted comments
-  sortedComments: (state: State) => (sortBy: string) => {
-    let sortedComments = [...state.comments];
-    
-    if (sortBy === 'mostUpvoted') {
-      // Sort by most upvoted first
-      sortedComments.sort((a, b) => b.upvotes - a.upvotes);
-    } 
-
-    return sortedComments;
-  }
+      return sortedComments;
+    }
   },
 });
 
