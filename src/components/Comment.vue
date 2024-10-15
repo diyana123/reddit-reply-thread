@@ -7,7 +7,7 @@
       <div class="comment-body">
         <div class="comment-header">
           <span class="author">Username</span>
-          <small class="timestamp">2 hours ago</small>
+        
         </div>
 
         <div class="comment-content">
@@ -15,7 +15,6 @@
         </div>
 
         <div class="comment-actions">
-          <!-- @click.stop directive is added to the upvote and downvote buttons to prevent the event from bubbling up and triggering on parent elements. -->
           <button
             @click.stop="
               () => {
@@ -28,7 +27,6 @@
             <span class="icon">⬆</span> {{ comment.upvotes }}
           </button>
 
-          <!-- Downvote button -->
           <button
             @click.stop="
               () => {
@@ -41,7 +39,6 @@
             <span class="icon">⬇</span> {{ comment.downvotes }}
           </button>
 
-          <!-- Reply button -->
           <button @click="toggleReplyForm" class="reply-btn">Reply</button>
         </div>
 
@@ -62,8 +59,24 @@
       </div>
     </div>
 
+    <!-- Show/Hide Replies Button -->
+    <button
+      v-if="hasReplies && collapsed"
+      @click="toggleReplies"
+      class="toggle-replies-btn"
+    >
+      Show Replies ({{ comment.replies.length }})
+    </button>
+    <button
+      v-if="hasReplies && !collapsed"
+      @click="toggleReplies"
+      class="toggle-replies-btn"
+    >
+      Hide Replies
+    </button>
+
     <!-- Nested Replies -->
-    <ul v-if="comment.replies.length" class="nested-replies">
+    <ul v-if="hasReplies && !collapsed" class="nested-replies">
       <Comment
         v-for="reply in comment.replies"
         :key="reply.id"
@@ -89,23 +102,29 @@
 <script lang="ts" setup>
 import { ref, computed } from "vue";
 import Comment from "./Comment.vue";
+import { Comment as CommentType } from '../types/types';
 
-interface Comment {
-  id: number;
-  content: string;
-  upvotes: number;
-  downvotes: number;
-  replies: Comment[];
-}
 
-const props = defineProps<{ comment: Comment }>();
+// interface Comment {
+//   id: number;
+//   content: string;
+//   upvotes: number;
+//   downvotes: number;
+//   replies: Comment[];
+ 
+// }
+
+const props = defineProps<{ comment: CommentType }>();
 const emit = defineEmits(["replyToComment", "upvote", "downvote"]);
 
 const showReplyForm = ref(false);
 const replyContent = ref<string>("");
 
+// State to control whether replies are collapsed or expanded
+const collapsed = ref(true);
+
 // Check if there are replies
-const hasReplies = computed(() => props.comment.replies.length > 0);
+const hasReplies = computed(() => (props.comment.replies || []).length > 0);
 
 // Toggle reply form visibility
 const toggleReplyForm = () => {
@@ -121,10 +140,17 @@ const addReply = (): void => {
   }
 };
 
+// Toggle replies visibility
+const toggleReplies = () => {
+  collapsed.value = !collapsed.value;
+};
+
 // Handle replies to replies
 const onReplyToComment = (parentId: number, replyContent: string): void => {
   emit("replyToComment", parentId, replyContent);
 };
+
+
 </script>
 
 <style lang="scss" scoped>
@@ -225,4 +251,27 @@ const onReplyToComment = (parentId: number, replyContent: string): void => {
   border-left: 2px solid #ddd;
   margin-top: 10px;
 }
+
+.toggle-replies-btn {
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  margin-top: 10px;
+  padding: 5px 10px;
+  font-size: 14px;
+  border-radius: 4px;
+  transition: background-color 0.3s, color 0.3s;
+
+  &:hover {
+    background-color: #e9f5ff;
+    color: #0056b3;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+  }
+}
+
 </style>
