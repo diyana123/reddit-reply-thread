@@ -2,12 +2,14 @@
     <div class="comment-thread">
       <!-- Comment Form -->
       <form @submit.prevent="addComment" class="comment-form">
-        <textarea
-          v-model="newComment"
-          class="comment-input"
-          placeholder="Write a comment..."
-          required
-        ></textarea>
+        <div class="textarea-container">
+          <textarea
+            v-model="newComment"
+            class="comment-input"
+            placeholder="Write a comment..."
+            required
+          ></textarea>
+        </div>
         <button type="submit" class="submit-btn">Post Comment</button>
       </form>
   
@@ -16,7 +18,6 @@
         <label for="sortBy">Sort By:</label>
         <select v-model="sortBy" id="sortBy">
           <option value="mostUpvoted">Most Upvoted</option>
-         
         </select>
       </div>
   
@@ -86,12 +87,23 @@
   
   .comment-form {
     margin-bottom: 20px;
+    display: flex; /* Use flexbox for alignment */
+    flex-direction: column; /* Align items in a column */
+    align-items: center; /* Center items horizontally */
+  
+    .textarea-container {
+      width: 100%; /* Make the container full width */
+      display: flex; /* Use flexbox for centering */
+      justify-content: center; /* Center the textarea */
+    }
   
     .comment-input {
       width: 100%;
       height: 80px;
       padding: 10px;
       border-radius: 4px;
+      resize: none; /* Prevents resizing on mobile devices */
+      font-size: 1rem; /* Base font size for better readability */
     }
   
     .submit-btn {
@@ -101,6 +113,8 @@
       border: none;
       border-radius: 4px;
       cursor: pointer;
+      font-size: 1rem; /* Ensure button is readable on mobile */
+      margin-top: 10px; /* Add spacing above the button */
   
       &:hover {
         background-color: #0056b3;
@@ -113,16 +127,43 @@
     display: flex;
     align-items: center;
   
+    label {
+      margin-right: 10px; /* Spacing between label and select */
+    }
+  
     select {
-      margin-left: 10px;
       padding: 5px;
       border-radius: 4px;
+      font-size: 1rem; /* Base font size for better readability */
     }
   }
   
   .comment-list {
     list-style: none;
     padding-left: 0;
+  }
+  
+  /* Media Queries for Responsiveness */
+  @media (max-width: 600px) {
+    .comment-input {
+      height: 60px; /* Reduce height on smaller screens */
+      font-size: 0.9rem; /* Slightly smaller font size for better fit */
+    }
+  
+    .submit-btn {
+      width: 100%; /* Full width button on mobile */
+      padding: 12px; /* Slightly larger padding */
+      font-size: 1rem; /* Ensure button text is readable */
+    }
+  
+    .sorting-options {
+      flex-direction: column; /* Stack label and select on smaller screens */
+      align-items: flex-start; /* Align to the left */
+    }
+  
+    label {
+      margin-bottom: 5px; /* Space between label and select */
+    }
   }
   </style>
   
