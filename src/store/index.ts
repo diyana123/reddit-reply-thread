@@ -15,30 +15,26 @@ export default createStore<State>({
   mutations: {
     ADD_COMMENT(state: State, comment: Comment) {
       state.comments.push(comment);
-      // Remove this line
-      // this.commit('SAVE_COMMENTS_TO_LOCAL');
+     
     },
     ADD_REPLY(state: State, { id, reply }: { id: string; reply: Comment }) {
       state.comments = findAndUpdateById(state.comments, id, (comment) => {
         comment.replies.push(reply);
         return {}; // Ensure the function returns an empty object for mutations
       });
-      // Remove this line
-      // this.commit('SAVE_COMMENTS_TO_LOCAL');
+     
     },
     UPVOTE_COMMENT(state: State, id: string) {
       state.comments = findAndUpdateById(state.comments, id, (comment) => ({
         upvotes: comment.upvotes + 1,
       }));
-      // Remove this line
-      // this.commit('SAVE_COMMENTS_TO_LOCAL');
+ 
     },
     DOWNVOTE_COMMENT(state: State, id: string) {
       state.comments = findAndUpdateById(state.comments, id, (comment) => ({
         downvotes: comment.downvotes + 1,
       }));
-      // Remove this line
-      // this.commit('SAVE_COMMENTS_TO_LOCAL');
+   
     },
     SET_COMMENTS(state: State, comments: Comment[]) {
       state.comments = comments;
@@ -132,7 +128,7 @@ function findAndUpdateById(
       }
     }
 
-    // No changes made, return the comment as is
+    // return the comment as is
     return comment;
   });
 }
